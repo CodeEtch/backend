@@ -7,7 +7,7 @@
 var GitHubApi = require("github");
 var esprima = require("esprima");
 var ghdownload = require('github-download');
-var exec = require('exec');
+var fs = require('fs');
 
 module.exports = {
   /**
@@ -19,26 +19,38 @@ module.exports = {
     console.log("Received create request");
     // console.log(esprima.tokenize()):
     
-    ghdownload({user: 'jprichardson', repo: 'node-batchflow', ref: 'master'}, process.cwd())
-    .on('dir', function(dir) {
-        console.log(dir)
-    })
-    .on('file', function(file) {
-        console.log(file)
-    })
-    .on('zip', function(zipUrl) { //only emitted if Github API limit is reached and the zip file is downloaded
-        console.log(zipUrl)
-    })
+    var now = new Date();
+    var timeString = now.getTime();
+
+    var deleteFolderRecursive = function(path) {
+        if( fs.existsSync(path) ) {
+            fs.readdirSync(path).forEach(function(file,index){
+            var curPath = path + "\\" + file;
+            if(fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+            });
+            fs.rmdirSync(path);
+        } else {
+            console.log("Path does not exist: " + path);
+        }
+    };
+
+    ghdownload({user: 'jprichardson', repo: 'node-batchflow', ref: 'master'}, process.cwd() + "/" + timeString)
     .on('error', function(err) {
         console.error(err)
     })
     .on('end', function() {
-        exec('tree', function(err, stdout, sderr) {
-            console.log(stdout)
-        })
-    })
+        // Should call our parser function
+        deleteFolderRecursive(process.cwd() + "\\" + timeString);
+    });
+
+    console.log(process.cwd());
+
     return res.json({
-      todo: 'Not implemented yet!'
+        desc: "Testing function"
     });
   }
 };
