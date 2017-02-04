@@ -6,6 +6,7 @@
   "keywords": [],
   "dependencies": {
     "ejs": "2.3.4",
+    "github": "^8.1.1",
     "grunt": "1.0.1",
     "grunt-contrib-clean": "1.0.0",
     "grunt-contrib-coffee": "1.0.0",
@@ -21,7 +22,8 @@
     "include-all": "^1.0.0",
     "rc": "1.0.1",
     "sails": "~0.12.11",
-    "sails-disk": "~0.10.9"
+    "sails-disk": "~0.10.9",
+    "sails-hook-autoreload": "^0.13.2"
   },
   "scripts": {
     "debug": "node debug app.js",
