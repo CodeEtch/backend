@@ -5,68 +5,38 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 var GitHubApi = require("github");
+var esprima = require("esprima");
+var ghdownload = require('github-download');
+var exec = require('exec');
 
 module.exports = {
   /**
    * CommentController.create()
    */
-  create: function (req, res) {
+  test: function (req, res) {
+    // console.log(req);
 
-    var github = new GitHubApi({
-        // optional
-        debug: true,
-        protocol: "https",
-        host: "api.github.com", // should be api.github.com for GitHub
-        pathPrefix: "", // for some GHEs; none for GitHub
-        headers: {
-            "user-agent": "My-Cool-GitHub-App" // GitHub is happy with a unique user agent
-        },
-        // Promise: require('bluebird'),
-        followRedirects: false, // default: true; there's currently an issue with non-get redirects, so allow ability to disable follow-redirects
-        timeout: 5000
-    });
-
-    // TODO: optional authentication here depending on desired endpoints. See below in README.
-
-    var test_val = 0;
-
-    github.users.getFollowingForUser({
-        // optional
-        // headers: {
-        //     "cookie": "blahblah"
-        // },
-        username: "magellantoo"
-    }, function(err, res) {
-        console.log(JSON.stringify(res));
-    });
-
-    return res.json({
-      todo: 'Not implemented yet!'
-    });
-  },
-
-  /**
-   * CommentController.destroy()
-   */
-  destroy: function (req, res) {
-    return res.json({
-      todo: 'Not implemented yet!'
-    });
-  },
-
-  /**
-   * CommentController.tag()
-   */
-  tag: function (req, res) {
-    return res.json({
-      todo: 'Not implemented yet!'
-    });
-  },
-
-  /**
-   * CommentController.like()
-   */
-  like: function (req, res) {
+    console.log("Received create request");
+    // console.log(esprima.tokenize()):
+    
+    ghdownload({user: 'jprichardson', repo: 'node-batchflow', ref: 'master'}, process.cwd())
+    .on('dir', function(dir) {
+        console.log(dir)
+    })
+    .on('file', function(file) {
+        console.log(file)
+    })
+    .on('zip', function(zipUrl) { //only emitted if Github API limit is reached and the zip file is downloaded
+        console.log(zipUrl)
+    })
+    .on('error', function(err) {
+        console.error(err)
+    })
+    .on('end', function() {
+        exec('tree', function(err, stdout, sderr) {
+            console.log(stdout)
+        })
+    })
     return res.json({
       todo: 'Not implemented yet!'
     });
