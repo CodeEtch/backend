@@ -3,7 +3,7 @@ public class Test1 {
         
     }
 
-    public void go() {
+    public void go(double example) {
         System.out.println("Hello, world!");
     }
 }

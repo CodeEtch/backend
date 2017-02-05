@@ -49,7 +49,7 @@ module.exports = {
         console.log(dir);
     })
     .on('file', function(file) {
-    console.log(file)
+        console.log(file)
     })
     .on('zip', function(zipUrl) { //only emitted if Github API limit is reached and the zip file is downloaded
         console.log("Received zip: " + zipUrl);
@@ -65,7 +65,6 @@ module.exports = {
     .on('end', function() {
         // If repo already exists, do not parse
         db.getRepo(owner, repo_name, ref, function(repo) {
-            console.log(repo);
             if (!repo) {
                 db.createRepo(owner, repo_name, ref, function(repo) {
                     console.log("Creating new repo");

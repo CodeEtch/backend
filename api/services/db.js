@@ -53,6 +53,9 @@ function init() {
         path: {
             type: Sequelize.STRING
         },
+        file_name: {
+            type: Sequelize.STRING
+        },
         uuid: {
             type: Sequelize.UUID,
             defaultValue: Sequelize.UUIDV1,
@@ -92,6 +95,7 @@ function init() {
     dbMethodParam.belongsTo(dbMethod, { foreignKey: "method_uuid" });
 
     dbClassRef = sequelize.define('classRef', {
+        class_name: Sequelize.STRING,
         uuid: {
             type: Sequelize.UUID,
             defaultValue: Sequelize.UUIDV1,
@@ -156,11 +160,12 @@ function getClasses(repo_id, callback) {
     }).then(callback);
 }
 
-function createClass(repo_id, name, path, callback) {
+function createClass(repo_id, name, path, file_name, callback) {
     dbClass.create({
         repo_uuid: repo_id,
         name: name,
-        path: path
+        path: path,
+        file_name: file_name
     }).then(callback)
 }
 
@@ -180,6 +185,22 @@ function createMethod(class_id, name, type, callback) {
     }).then(callback)
 }
 
+function getClassRefs(method_id, callback) {
+    dbClassRef.findAll({
+        where: {
+            method_uuid: method_id,
+        }
+    }).then(callback);
+}
+
+function createClassRef(method_id, class_id, class_name, callback) {
+    dbClassRef.create({
+        method_uuid: method_id,
+        class_uuid: class_id,
+        class_name: class_name,
+    }).then(callback)
+}
+
 module.exports = {
     init: init,
     getRepo: getRepo,
@@ -187,5 +208,7 @@ module.exports = {
     getClasses: getClasses,
     createClass: createClass,
     getMethods: getMethods,
-    createMethod: createMethod
+    createMethod: createMethod,
+    getClassRefs: getClassRefs,
+    createClassRef: createClassRef,
 };

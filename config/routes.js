@@ -39,7 +39,8 @@ module.exports.routes = {
   'GET /repositories/:owner/:repo/:branch': 'RepositoriesController.create',
   'GET /classes/:owner/:repo/:branch': 'ClassesController.getClasses',
   'GET /classes/:repo_id': 'ClassesController.getRepoClasses',
-  'GET /classes/:class_id/methods': 'ClassesController.getClassMethods'
+  'GET /classes/:class_id/methods': 'ClassesController.getClassMethods',
+  'GET /methods/:method_id/classrefs': 'MethodsController.getClassReferences'
 
   /***************************************************************************
   *                                                                          *

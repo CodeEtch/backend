@@ -6,10 +6,15 @@ var antlr4 = require('antlr4/index');
 function JavaListener() {
 	antlr4.tree.ParseTreeListener.call(this);
 
-	this.classDeclarations = {};
+	this.className = null;
 	this.methodDeclarations = {};
-	this.classReferences = {};
 	this.methodReferences = {};
+	// key: method name
+	// value: list of parameters
+	this.methodParams = {};
+	// key: method name
+	// value: list of classes referenced within method
+	this.classReferences = {};
 
 	this.methodScope = [];
 
@@ -19,8 +24,8 @@ function JavaListener() {
 JavaListener.prototype = Object.create(antlr4.tree.ParseTreeListener.prototype);
 JavaListener.prototype.constructor = JavaListener;
 
-JavaListener.prototype.getClassDeclarations = function(ctx) {
-	return this.classDeclarations;
+JavaListener.prototype.getClassName = function(ctx) {
+	return this.className;
 }
 
 JavaListener.prototype.getMethodDeclarations = function(ctx) {
@@ -40,7 +45,7 @@ JavaListener.prototype.enterClassDeclaration = function(ctx) {
 	for (var child of ctx.children) {
 		if (child.symbol) {
 			if (ctx.parser.symbolicNames[child.symbol.type] == 'Identifier') {
-				this.classDeclarations[child.getText()] = 0;
+				this.className = child.getText();
 			}
 		}
 	}
@@ -62,25 +67,52 @@ JavaListener.prototype.enterMethodDeclaration = function(ctx) {
 	}
 	if (method_name) {
 		this.methodScope.push(method_name);
-		console.log(ctx.children[0].getText());
+		this.classReferences[method_name] = [];
+		this.methodParams[method_name] = [];
 		this.methodDeclarations[method_name] = ctx.children[0].getText();
 	}
-// 	this.methodDeclarations[method_name] = ctx.children[0].getText();
-//	this.methodDeclarations[method_name] = 0;
 };
 
 // Exit a parse tree produced by JavaParser#methodDeclaration.
 JavaListener.prototype.exitMethodDeclaration = function(ctx) {
+	this.methodScope.pop();
+};
+
+// Enter a parse tree produced by JavaParser#constructorDeclaration.
+JavaListener.prototype.enterConstructorDeclaration = function(ctx) {
+	var constructor_name = null;
+	for (var child of ctx.children) {
+		if (child.symbol) {
+			if (ctx.parser.symbolicNames[child.symbol.type] == 'Identifier') {
+				method_name = child.getText();
+			}
+		}
+	}
+	if (method_name) {
+		this.methodScope.push(method_name);
+		this.classReferences[method_name] = [];
+		this.methodParams[method_name] = [];
+		this.methodDeclarations[method_name] = 'Constructor';
+	}
+};
+
+// Exit a parse tree produced by JavaParser#constructorDeclaration.
+JavaListener.prototype.exitConstructorDeclaration = function(ctx) {
+	this.methodScope.pop();
 };
 
 // Enter a parse tree produced by JavaParser#createdName.
 JavaListener.prototype.enterCreatedName = function(ctx) {
+	var class_name = null;
 	for (var child of ctx.children) {
 		if (child.symbol) {
 			if (ctx.parser.symbolicNames[child.symbol.type] == 'Identifier') {
-				this.classReferences[child.getText()] = 0;
+				class_name = child.getText();
 			}
 		}
+	}
+	if (class_name && this.methodScope.length > 0) {
+		this.classReferences[this.methodScope[this.methodScope.length - 1]].push(class_name);
 	}
 };
 
@@ -117,7 +149,7 @@ JavaListener.prototype.exitEveryRule = function(ctx) {
 
 // Enter a parse tree produced by JavaParser#compilationUnit.
 JavaListener.prototype.enterCompilationUnit = function(ctx) {
-	// console.log(ctx.toStringTree(ctx.parser.ruleNames));
+	console.log(ctx.toStringTree(ctx.parser.ruleNames));
 };
 
 // Exit a parse tree produced by JavaParser#compilationUnit.
@@ -317,14 +349,6 @@ JavaListener.prototype.enterGenericMethodDeclaration = function(ctx) {
 JavaListener.prototype.exitGenericMethodDeclaration = function(ctx) {
 };
 
-
-// Enter a parse tree produced by JavaParser#constructorDeclaration.
-JavaListener.prototype.enterConstructorDeclaration = function(ctx) {
-};
-
-// Exit a parse tree produced by JavaParser#constructorDeclaration.
-JavaListener.prototype.exitConstructorDeclaration = function(ctx) {
-};
 
 
 // Enter a parse tree produced by JavaParser#genericConstructorDeclaration.
