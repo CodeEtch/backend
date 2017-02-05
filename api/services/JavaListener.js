@@ -40,6 +40,10 @@ JavaListener.prototype.getMethodReferences = function(ctx) {
 	return this.methodReferences;
 }
 
+JavaListener.prototype.getMethodParams = function(ctx) {
+	return this.methodParams;
+}
+
 // Enter a parse tree produced by JavaParser#classDeclaration.
 JavaListener.prototype.enterClassDeclaration = function(ctx) {
 	for (var child of ctx.children) {
@@ -120,6 +124,16 @@ JavaListener.prototype.enterCreatedName = function(ctx) {
 JavaListener.prototype.exitCreatedName = function(ctx) {
 };
 
+// Enter a parse tree produced by JavaParser#formalParameter.
+JavaListener.prototype.enterFormalParameter = function(ctx) {
+	if (this.methodScope.length > 0) {
+		this.methodParams[this.methodScope[this.methodScope.length - 1]].push(ctx.getText());
+	}
+};
+
+// Exit a parse tree produced by JavaParser#formalParameter.
+JavaListener.prototype.exitFormalParameter = function(ctx) {
+};
 
 // Enter a parse tree produced by JavaParser.
 JavaListener.prototype.enterEveryRule = function(ctx) {
@@ -149,7 +163,7 @@ JavaListener.prototype.exitEveryRule = function(ctx) {
 
 // Enter a parse tree produced by JavaParser#compilationUnit.
 JavaListener.prototype.enterCompilationUnit = function(ctx) {
-	console.log(ctx.toStringTree(ctx.parser.ruleNames));
+	// console.log(ctx.toStringTree(ctx.parser.ruleNames));
 };
 
 // Exit a parse tree produced by JavaParser#compilationUnit.
@@ -548,14 +562,6 @@ JavaListener.prototype.enterFormalParameterList = function(ctx) {
 JavaListener.prototype.exitFormalParameterList = function(ctx) {
 };
 
-
-// Enter a parse tree produced by JavaParser#formalParameter.
-JavaListener.prototype.enterFormalParameter = function(ctx) {
-};
-
-// Exit a parse tree produced by JavaParser#formalParameter.
-JavaListener.prototype.exitFormalParameter = function(ctx) {
-};
 
 
 // Enter a parse tree produced by JavaParser#lastFormalParameter.

@@ -119,6 +119,7 @@ Processor.prototype.parse = function(abs_path, local_path, file) {
                 var methodDeclarations = listener.getMethodDeclarations();
                 var class_name = listener.getClassName();
                 var classReferences = listener.getClassReferences();
+                var methodParams = listener.getMethodParams();
                 for (var className of Object.keys(classReferences)) {
                     self.classReferences[className] = classReferences[className];
                 }
@@ -136,6 +137,13 @@ Processor.prototype.parse = function(abs_path, local_path, file) {
                         db.createMethod(res.uuid, method, methodDeclarations[method], function(res) {
                             console.log(res.name);
                             self.methods[res.name] = res.uuid;
+
+                            console.log(methodParams[res.name]);
+                            for (var param of methodParams[res.name]) {
+                                console.log(param);
+                                db.createMethodParam(res.uuid, param);
+                            }
+
                             counter += 1;
                             if (counter == Object.keys(methodDeclarations).length) {
                                 console.log("All methods accounted for")

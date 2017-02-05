@@ -79,11 +79,14 @@ function init() {
     });
     dbMethod.belongsTo(dbClass, { foreignKey: "class_uuid" });
 
-    dbMethodParam = sequelize.define('methodParam', {
-        name: {
-            type: Sequelize.STRING
-        },
-        type: {
+    dbMethodParam = sequelize.define('method_param', {
+        // name: {
+        //     type: Sequelize.STRING
+        // },
+        // type: {
+        //     type: Sequelize.STRING
+        // },
+        parameter: {
             type: Sequelize.STRING
         },
         uuid: {
@@ -94,7 +97,7 @@ function init() {
     });
     dbMethodParam.belongsTo(dbMethod, { foreignKey: "method_uuid" });
 
-    dbClassRef = sequelize.define('classRef', {
+    dbClassRef = sequelize.define('class_ref', {
         class_name: Sequelize.STRING,
         uuid: {
             type: Sequelize.UUID,
@@ -105,7 +108,7 @@ function init() {
     dbClassRef.belongsTo(dbClass, { foreignKey: "class_uuid" });
     dbClassRef.belongsTo(dbMethod, { foreignKey: "method_uuid" });
 
-    dbMethodRef = sequelize.define('methodRef', {
+    dbMethodRef = sequelize.define('method_ref', {
         uuid: {
             type: Sequelize.UUID,
             defaultValue: Sequelize.UUIDV1,
@@ -201,6 +204,23 @@ function createClassRef(method_id, class_id, class_name, callback) {
     }).then(callback)
 }
 
+function getMethodParam(method_id, callback) {
+    dbMethodParam.findAll({
+        where: {
+            method_uuid: method_id,
+        }
+    }).then(callback);
+}
+
+function createMethodParam(method_id, parameter, callback) {
+    dbMethodParam.create({
+        where: {
+            method_uuid: method_id,
+            parameter: parameter
+        }
+    }).then(callback);
+}
+
 module.exports = {
     init: init,
     getRepo: getRepo,
@@ -211,4 +231,6 @@ module.exports = {
     createMethod: createMethod,
     getClassRefs: getClassRefs,
     createClassRef: createClassRef,
+    getMethodParam: getMethodParam,
+    createMethodParam: createMethodParam,
 };
