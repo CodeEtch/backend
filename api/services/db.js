@@ -17,7 +17,8 @@ function init() {
             max: 5,
             min: 0,
             idle: 10000
-        }
+        },
+        logging: false
     });
 
     sequelize.authenticate()
@@ -98,6 +99,7 @@ function init() {
     dbMethodParam.belongsTo(dbMethod, { foreignKey: "method_uuid" });
 
     dbClassRef = sequelize.define('class_ref', {
+        method_name: Sequelize.STRING,
         class_name: Sequelize.STRING,
         uuid: {
             type: Sequelize.UUID,
@@ -196,10 +198,11 @@ function getClassRefs(method_id, callback) {
     }).then(callback);
 }
 
-function createClassRef(method_id, class_id, class_name, callback) {
+function createClassRef(method_id, class_id, method_name, class_name, callback) {
     dbClassRef.create({
         method_uuid: method_id,
         class_uuid: class_id,
+        method_name: method_name,
         class_name: class_name,
     }).then(callback)
 }

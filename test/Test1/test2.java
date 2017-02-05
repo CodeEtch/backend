@@ -5,79 +5,35 @@
  */
 package com.yahoo.dba.perf.myperf.common;
 
-/**
- * Place holder for alert information
- * @author xrao
- *
- */
-public class AlertEntry implements java.io.Serializable{
-	private static final long serialVersionUID = 1L;
+public class Constants 
+{
+  //Analyzer version
+  public static final String VERSION = "2.0";
+	
+  //Status
+  public static final int STATUS_OK = 0;
+  public static final int STATUS_BAD = -1;
+  
+  // DB instance management action
+  public static final int DBM_ACTION_ADD_CLUSTER=0;
+  public static final int DBM_ACTION_ADD_CLUSTER_USING_VIP=1;
+  public static final int DBM_ACTION_ADD_HOST=2;
+  public static final int DBM_ACTION_UPDATE_HOST=3;
+  public static final int DBM_ACTION_REMOVE_HOST=4;
+  public static final int DBM_ACTION_REMOVE_CLUSTER=5;
+  public static final int DBM_ACTION_RENAME_CLUSTER=6;
+  public static final int DBM_ACTION_ACL=7;
+  	
+  public static final String URL_PATH_CMD = "CMD";
+  public static final String URL_PATH_DBGROUP = "DBGROUP";
+  public static final String URL_PATH_DBHOST = "DBHOST";
+  public static final String URL_PATH_METRICS = "METRICS";
+  public static final String URL_PATH_START_TS = "START_TS";
+  public static final String URL_PATH_END_TS = "END_TS";
+  public static final String URL_PATH_ALERT_TYPE = "ALERT_TYPE";
 
-	private long ts; //timestamp
-	private String alertReason;//the type of alert
-	private String alertValue;//the value triggered alert
-	private String dbGroup;//database group
-	private String dbHost;//database server host
-	public AlertEntry()
-	{
-		
-	}
-	
-	public AlertEntry(long ts, String alertReason, String alertValue, String dbGroup, String dbHost)
-	{
-		this.ts = ts;
-		this.alertReason = alertReason;
-		this.alertValue = alertValue;
-		this.dbGroup = dbGroup;
-		this.dbHost = dbHost;
-	}
-	
-	public long getTs() {
-		return ts;
-	}
-	public void setTs(long ts) {
-		this.ts = ts;
-	}
-	public String getAlertReason() {
-		return alertReason;
-	}
-	public void setAlertReason(String alertReason) {
-		this.alertReason = alertReason;
-	}
-	public String getAlertValue() {
-		return alertValue;
-	}
-	public void setAlertValue(String alertValue) {
-		this.alertValue = alertValue;
-	}
-	public String getDbGroup() {
-		return dbGroup;
-	}
-	public void setDbGroup(String dbGroup) {
-		this.dbGroup = dbGroup;
-	}
-	public String getDbHost() {
-		return dbHost;
-	}
-	public void setDbHost(String dbHost) {
-		this.dbHost = dbHost;
-	}
-	
-	public String getAlertTime()
-	{
-		return CommonUtils.formatTimeFromTimestamp(ts, "yyyy-MM-dd HH:mm:ss");
-	}
+  public static final String SESSION_DEBUG="sess_debug";
+  
+  public static final String CONN_MSG_NORETRY = "CONN_NO_RETRY";
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("ALERT: ").append(this.alertReason);
-		if(this.alertValue != null && !this.alertValue.isEmpty())
-			sb.append(", ").append(this.alertValue);
-		sb.append(", ").append(this.dbGroup).append(", ").append(this.dbHost);
-		sb.append(", TIME: ").append(this.getAlertTime());
-		return sb.toString();
-	}
-	
-	
 }
