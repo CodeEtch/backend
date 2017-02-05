@@ -16,7 +16,6 @@ function Processor(repo_id) {
     this.methods = {};
     this.classReferences = {};
     this.fileCount = 0;
-    this.filesLeft = {};
 }
 
 Processor.prototype = Object.create(null);
@@ -45,7 +44,6 @@ Processor.prototype.countFiles = function(abs_path, local_path = '') {
             } else {
                 if (self.isValidFile(file)) {
                     self.fileCount++;
-                    self.filesLeft[file] = 0;
                 }
             }
         });
@@ -68,9 +66,7 @@ Processor.prototype.processHelper = function(abs_path, local_path = '') {
                     // Parse file
                     self.parse(abs_path, local_path, file).then(function() {
                         self.fileCount--;
-                        delete self.filesLeft[file];
                         if (self.fileCount < 10) {
-                            console.log(self.filesLeft);
                             console.log("Files remaining: " + self.fileCount);
                         }
                         if (self.fileCount == 0) {
@@ -128,15 +124,9 @@ Processor.prototype.parse = function(abs_path, local_path, file) {
                 var parsed_method_refs = listener.getClassReferences();
                 var methodParams = listener.getMethodParams();
                 
-                if (file.toLowerCase() == "constants.java") {
-                    console.log("test 0");
-                }
                 var parsed_method_ref_keys = Object.keys(parsed_method_refs).filter(function(element) {
                     return parsed_method_refs[element].length != 0;
                 });
-                if (file.toLowerCase() == "constants.java") {
-                    console.log("test 1");
-                }
 
                 for (var i = 0; i < parsed_method_ref_keys.length; i++) {
                     if (!(parsed_method_ref_keys[i] in self.classReferences)) {
@@ -148,9 +138,6 @@ Processor.prototype.parse = function(abs_path, local_path, file) {
                     self.classReferences[parsed_method_ref_keys[i]][class_name] = parsed_method_refs[parsed_method_ref_keys[i]];
                 }
 
-                if (file.toLowerCase() == "constants.java") {
-                    console.log("test 2");
-                }
                 self.repo.files[file_tokens[0]] = {
                     path: local_path,
                     methodDeclarations: methodDeclarations,
@@ -158,12 +145,13 @@ Processor.prototype.parse = function(abs_path, local_path, file) {
                     methodReferences: listener.getMethodReferences(),
                 };
 
-                if (file.toLowerCase() == "constants.java") {
-                    console.log("test 3");
-                }
                 db.createClass(self.repo_id, class_name, local_path, file_tokens[0], function(class_res) {
                     self.classes[class_res.name] = class_res.uuid;
                     var counter = 0;
+                    
+                    if (Object.keys(methodDeclarations).length == 0) {
+                        success();
+                    }
                     for (var method of Object.keys(methodDeclarations)) {
                         db.createMethod(class_res.uuid, method, methodDeclarations[method], function(method_res) {
                             if (!(method_res.name in self.methods)) {
@@ -193,9 +181,6 @@ Processor.prototype.parse = function(abs_path, local_path, file) {
 
 Processor.prototype.buildClassReferences = function() {
     console.log("Processor: Building class references");
-    console.log(this.classReferences);
-    console.log(this.methods);
-    console.log(this.classes);
 
     var reference_methods = Object.keys(this.classReferences);
     // Every reference 
