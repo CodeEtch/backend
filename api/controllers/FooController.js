@@ -5,9 +5,14 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 var GitHubApi = require("github");
-var java_parser = require("java-parser");
 var ghdownload = require('github-download');
 var fs = require('fs');
+
+var java_parser = require('../services/java');
+var antlr4 = require('antlr4/index');
+var JavaLexer = require('../services/JavaLexer');
+var JavaParser = require('../services/JavaParser');
+var JavaListener = require('../services/JavaListener');
 
 module.exports = {
   /**
@@ -55,36 +60,26 @@ module.exports = {
   },
   parse: function (req, res) {
 
-    var file = fs.readFileSync('test.java', 'utf8');
-    var syntax  = java_parser.parse(file);
-    var types = [];
-    for (var type of syntax.types) {
-      var functions = [];
+    var program = fs.readFileSync('test/main/main.java', 'utf8');
+    console.log(program);
 
-      for (var declaration of type.bodyDeclarations) {
-        var references = []
+    var chars = new antlr4.InputStream(program);
+    var lexer = new JavaLexer.JavaLexer(chars);
+    var tokens  = new antlr4.CommonTokenStream(lexer);
+    var parser = new JavaParser.JavaParser(tokens);
+    parser.buildParseTrees = true;
+    var tree = parser.compilationUnit();
+    // var tree = parser.parse();
+    var listener = new JavaListener.JavaListener()
+    ////////////////// console.log(tree);
+    antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, tree);
 
-        for (var statement of declaration.body.statements) {
-          references.push({
-            name:statement.expression.name.identifier
-          })
-        }
+ /////////////////////
 
-        functions.push({
-          name:declaration.name,
-          references:references
-        })
-
-      }
-      types.push({
-        name:type.name,
-        functions:functions
-
-      })
-    }
-
-
-    return res.json(types);
+    return res.json({
+        test: "Nothing yet"
+    });
+    // return res.json(java_parser.parse(program));
 
   }
 };
