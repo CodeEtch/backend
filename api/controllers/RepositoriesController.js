@@ -88,7 +88,7 @@ module.exports = {
                     db.createRepo(owner, repo_name, ref, function(repo) {
                         console.log("Creating new repo");
                         var processor = new Processor(repo.uuid);
-                        processor.process(output_dir);
+                        processor.process(output_dir, '');
                         deleteFolderRecursive(output_dir);
                         return res.json(repo);
                     })

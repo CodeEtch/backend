@@ -2,7 +2,7 @@
 var Sequelize = require("sequelize");
 
 // Initialize database connection info
-let dbUsername = process.env.DB_USER,
+var dbUsername = process.env.DB_USER,
     dbPassword = process.env.DB_PASS,
     dbHost = process.env.DB_HOST,
     dbPort = process.env.DB_PORT,
@@ -117,9 +117,9 @@ function init() {
             primaryKey: true
         }
     });
-    dbMethodRef.belongsTo(dbMethod, { foreignKey: "src_uuid" });
-    dbMethodRef.belongsTo(dbMethod, { foreignKey: "dst_uuid" });
-    dbMethodRef.belongsTo(dbClass, { foreignKey: "class_uuid" });
+    // dbMethodRef.belongsTo(dbMethod, { foreignKey: "src_uuid" });
+    // dbMethodRef.belongsTo(dbMethod, { foreignKey: "dst_uuid" });
+    // dbMethodRef.belongsTo(dbClass, { foreignKey: "class_uuid" });
 
 
     // Setup tables

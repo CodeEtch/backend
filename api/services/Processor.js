@@ -25,14 +25,14 @@ Processor.prototype.getGraph = function() {
     return this.graph;
 }
 
-Processor.prototype.process = function(abs_path, local_path = '') {
+Processor.prototype.process = function(abs_path, local_path) {
     this.fileCount = 0;
     this.countFiles(abs_path, local_path);
     this.processHelper(abs_path, local_path).then(function() {
     });
 }
 
-Processor.prototype.countFiles = function(abs_path, local_path = '') {
+Processor.prototype.countFiles = function(abs_path, local_path) {
     var self = this;
     var full_path = abs_path + local_path;
     if( fs.existsSync(full_path) ) {
@@ -52,7 +52,7 @@ Processor.prototype.countFiles = function(abs_path, local_path = '') {
     }
 }
 
-Processor.prototype.processHelper = function(abs_path, local_path = '') {
+Processor.prototype.processHelper = function(abs_path, local_path) {
     var self = this;
     return new Promise(function(success, failure) {
         var full_path = abs_path + local_path;
