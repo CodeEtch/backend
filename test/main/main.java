@@ -8,7 +8,7 @@ public class HelloWorld {
         test_object.go();
     }
 
-    public int test_function(Test1 test) {
+    public int test_function(Test1 demo1, int demo2) {
         return 2;
     }
 }
