@@ -5,44 +5,134 @@ var antlr4 = require('antlr4/index');
 // This class defines a complete listener for a parse tree produced by JavaParser.
 function JavaListener() {
 	antlr4.tree.ParseTreeListener.call(this);
+
+	this.classDeclarations = {};
+	this.methodDeclarations = {};
+	this.classReferences = {};
+	this.methodReferences = {};
+
+	this.methodScope = [];
+
 	return this;
 }
 
 JavaListener.prototype = Object.create(antlr4.tree.ParseTreeListener.prototype);
 JavaListener.prototype.constructor = JavaListener;
 
+JavaListener.prototype.getClassDeclarations = function(ctx) {
+	return this.classDeclarations;
+}
 
-// Enter a parse tree produced by JavaParser#compilationUnit.
-JavaListener.prototype.enterEveryRule = function(ctx) {
-	console.log("");
-	// console.log("ctx");
-	// console.log(ctx);
-	console.log("ctx keys");
-	console.log(Object.keys(ctx));
-	console.log("ctx Children");
-	console.log(Object.keys(ctx.children));
+JavaListener.prototype.getMethodDeclarations = function(ctx) {
+	return this.methodDeclarations;
+}
+
+JavaListener.prototype.getClassReferences = function(ctx) {
+	return this.classReferences;
+}
+
+JavaListener.prototype.getMethodReferences = function(ctx) {
+	return this.methodReferences;
+}
+
+// Enter a parse tree produced by JavaParser#classDeclaration.
+JavaListener.prototype.enterClassDeclaration = function(ctx) {
 	for (var child of ctx.children) {
-		console.log("Child rule");
-		console.log(ctx.parser.ruleNames[child.ruleIndex]);
-		console.log(child);
-		debugger;
+		if (child.symbol) {
+			if (ctx.parser.symbolicNames[child.symbol.type] == 'Identifier') {
+				this.classDeclarations[child.getText()] = 0;
+			}
+		}
 	}
-	console.log("Rule");
-	console.log(ctx.parser.ruleNames[ctx.ruleIndex]);
 };
 
-// Exit a parse tree produced by JavaParser#compilationUnit.
+// Exit a parse tree produced by JavaParser#classDeclaration.
+JavaListener.prototype.exitClassDeclaration = function(ctx) {
+};
+
+// Enter a parse tree produced by JavaParser#methodDeclaration.
+JavaListener.prototype.enterMethodDeclaration = function(ctx) {
+	var method_name = null;
+	for (var child of ctx.children) {
+		if (child.symbol) {
+			if (ctx.parser.symbolicNames[child.symbol.type] == 'Identifier') {
+				method_name = child.getText();
+			}
+		}
+	}
+	if (method_name) {
+		this.methodScope.push(method_name);
+		console.log(ctx.children[0].getText());
+		this.methodDeclarations[method_name] = ctx.children[0].getText();
+	}
+// 	this.methodDeclarations[method_name] = ctx.children[0].getText();
+//	this.methodDeclarations[method_name] = 0;
+};
+
+// Exit a parse tree produced by JavaParser#methodDeclaration.
+JavaListener.prototype.exitMethodDeclaration = function(ctx) {
+};
+
+// Enter a parse tree produced by JavaParser#createdName.
+JavaListener.prototype.enterCreatedName = function(ctx) {
+	for (var child of ctx.children) {
+		if (child.symbol) {
+			if (ctx.parser.symbolicNames[child.symbol.type] == 'Identifier') {
+				this.classReferences[child.getText()] = 0;
+			}
+		}
+	}
+};
+
+// Exit a parse tree produced by JavaParser#createdName.
+JavaListener.prototype.exitCreatedName = function(ctx) {
+};
+
+
+// Enter a parse tree produced by JavaParser.
+JavaListener.prototype.enterEveryRule = function(ctx) {
+	// console.log("");
+	// // console.log("ctx");
+	// // console.log(ctx);
+	// // console.log("ctx keys");
+	// // console.log(Object.keys(ctx));
+	// // console.log("ctx Children");
+	// // console.log(Object.keys(ctx.children));
+	// for (var child of ctx.children) {
+	// 	// console.log("Child rule");
+	// 	if (child.symbol) {
+	// 		// console.log(ctx.parser.symbolicNames[child.symbol.type]);
+	// 		if (ctx.parser.symbolicNames[child.symbol.type] == 'Identifier') {
+	// 			debugger;
+	// 		}
+	// 	}
+	// }
+	// console.log("Rule");
+	// console.log(ctx.parser.ruleNames[ctx.ruleIndex]);
+};
+
+// Exit a parse tree produced by JavaParser.
 JavaListener.prototype.exitEveryRule = function(ctx) {
 };
 
 // Enter a parse tree produced by JavaParser#compilationUnit.
 JavaListener.prototype.enterCompilationUnit = function(ctx) {
+	// console.log(ctx.toStringTree(ctx.parser.ruleNames));
 };
 
 // Exit a parse tree produced by JavaParser#compilationUnit.
 JavaListener.prototype.exitCompilationUnit = function(ctx) {
 };
 
+
+
+
+
+
+
+
+
+// Unused listeners
 
 // Enter a parse tree produced by JavaParser#packageDeclaration.
 JavaListener.prototype.enterPackageDeclaration = function(ctx) {
@@ -99,14 +189,6 @@ JavaListener.prototype.enterVariableModifier = function(ctx) {
 JavaListener.prototype.exitVariableModifier = function(ctx) {
 };
 
-
-// Enter a parse tree produced by JavaParser#classDeclaration.
-JavaListener.prototype.enterClassDeclaration = function(ctx) {
-};
-
-// Exit a parse tree produced by JavaParser#classDeclaration.
-JavaListener.prototype.exitClassDeclaration = function(ctx) {
-};
 
 
 // Enter a parse tree produced by JavaParser#typeParameters.
@@ -225,14 +307,6 @@ JavaListener.prototype.enterMemberDeclaration = function(ctx) {
 JavaListener.prototype.exitMemberDeclaration = function(ctx) {
 };
 
-
-// Enter a parse tree produced by JavaParser#methodDeclaration.
-JavaListener.prototype.enterMethodDeclaration = function(ctx) {
-};
-
-// Exit a parse tree produced by JavaParser#methodDeclaration.
-JavaListener.prototype.exitMethodDeclaration = function(ctx) {
-};
 
 
 // Enter a parse tree produced by JavaParser#genericMethodDeclaration.
@@ -847,15 +921,6 @@ JavaListener.prototype.exitCreator = function(ctx) {
 };
 
 
-// Enter a parse tree produced by JavaParser#createdName.
-JavaListener.prototype.enterCreatedName = function(ctx) {
-};
-
-// Exit a parse tree produced by JavaParser#createdName.
-JavaListener.prototype.exitCreatedName = function(ctx) {
-};
-
-
 // Enter a parse tree produced by JavaParser#innerCreator.
 JavaListener.prototype.enterInnerCreator = function(ctx) {
 };
@@ -944,7 +1009,5 @@ JavaListener.prototype.enterArguments = function(ctx) {
 // Exit a parse tree produced by JavaParser#arguments.
 JavaListener.prototype.exitArguments = function(ctx) {
 };
-
-
 
 exports.JavaListener = JavaListener;

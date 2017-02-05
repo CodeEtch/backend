@@ -34,7 +34,12 @@ module.exports.routes = {
 
   '/': {
     view: 'homepage'
-  }
+  },
+  'POST /repositories/:owner/:repo/:branch': 'RepositoriesController.create',
+  'GET /repositories/:owner/:repo/:branch': 'RepositoriesController.create',
+  'GET /classes/:owner/:repo/:branch': 'ClassesController.getClasses',
+  'GET /classes/:repo_id': 'ClassesController.getRepoClasses',
+  'GET /classes/:class_id/methods': 'ClassesController.getClassMethods'
 
   /***************************************************************************
   *                                                                          *

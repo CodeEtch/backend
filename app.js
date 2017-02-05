@@ -24,6 +24,13 @@
 // > Note: This is not required in order to lift, but it is a convenient default.
 process.chdir(__dirname);
 
+console.log(__dirname);
+
+var db = require('./api/services/db');
+
+// Initialize sequelize on pg-sql server
+db.init();
+
 // Attempt to import `sails`.
 var sails;
 try {
@@ -54,7 +61,6 @@ try {
     rc = function () { return {}; };
   }
 }
-
 
 // Start server
 sails.lift(rc('sails'));

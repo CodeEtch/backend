@@ -7,12 +7,7 @@
 var GitHubApi = require("github");
 var ghdownload = require('github-download');
 var fs = require('fs');
-
-var java_parser = require('../services/java');
-var antlr4 = require('antlr4/index');
-var JavaLexer = require('../services/JavaLexer');
-var JavaParser = require('../services/JavaParser');
-var JavaListener = require('../services/JavaListener');
+var Processor = require('../services/Processor');
 
 module.exports = {
   /**
@@ -30,12 +25,12 @@ module.exports = {
     var deleteFolderRecursive = function(path) {
         if( fs.existsSync(path) ) {
             fs.readdirSync(path).forEach(function(file,index){
-            var curPath = path + "/" + file;
-            if(fs.lstatSync(curPath).isDirectory()) { // recurse
-                deleteFolderRecursive(curPath);
-            } else { // delete file
-                fs.unlinkSync(curPath);
-            }
+                var curPath = path + "/" + file;
+                if(fs.lstatSync(curPath).isDirectory()) { // recurse
+                    deleteFolderRecursive(curPath);
+                } else { // delete file
+                    fs.unlinkSync(curPath);
+                }
             });
             fs.rmdirSync(path);
         } else {
@@ -49,38 +44,22 @@ module.exports = {
     })
     .on('end', function() {
         // Should call our parser function
+        var processor = new Processor();
+        processor.process(timeString);
         deleteFolderRecursive(process.cwd() + "/" + timeString);
     });
 
-    console.log(process.cwd());
-
     return res.json({
-        desc: "Testing function"
+        status: "Processing"
     });
   },
   parse: function (req, res) {
+    var processor = new Processor();
+    processor.process("test");
 
-    var program = fs.readFileSync('test/main/main.java', 'utf8');
-    console.log(program);
-
-    var chars = new antlr4.InputStream(program);
-    var lexer = new JavaLexer.JavaLexer(chars);
-    var tokens  = new antlr4.CommonTokenStream(lexer);
-    var parser = new JavaParser.JavaParser(tokens);
-    parser.buildParseTrees = true;
-    var tree = parser.compilationUnit();
-    // var tree = parser.parse();
-    var listener = new JavaListener.JavaListener()
-    ////////////////// console.log(tree);
-    antlr4.tree.ParseTreeWalker.DEFAULT.walk(listener, tree);
-
- /////////////////////
-
+    return res.json(processor.getGraph());
     return res.json({
         test: "Nothing yet"
     });
-    // return res.json(java_parser.parse(program));
-
   }
 };
-

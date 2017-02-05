@@ -7,4 +7,8 @@ public class HelloWorld {
         test_object = new Test1();
         test_object.go();
     }
+
+    public int test_function() {
+        return 2;
+    }
 }

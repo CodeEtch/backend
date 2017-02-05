@@ -9,6 +9,13 @@
  * http://sailsjs.org/#!/documentation/reference/sails.config/sails.config.globals.html
  */
 module.exports.globals = {
+  // Database tables
+  dbRepo: null,
+  dbClass: null,
+  dbMethod: null,
+  dbClassRef: null,
+  dbMethodRef: null,
+  dbMethodParam: null
 
   /****************************************************************************
   *                                                                           *
