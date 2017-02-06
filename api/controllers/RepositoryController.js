@@ -13,14 +13,24 @@ var Processor = require('../services/Processor');
 var db = require('../services/db');
 
 module.exports = {
+  index: function (req, res) {
+    console.log("Classes: Received get repositories request");
+
+    db.getRepos(function(repos){
+      res.json(repos);
+    });
+  },
   /**
    * RepositoriesController.create()
    */
   create: function (req, res) {
+    console.log('createRepo', req.param);
     var owner = req.param('owner'),
         repo_name = req.param('repo'),
-        ref = req.param('branch');
-    
+      branch = req.param('branch');
+
+    console.log(owner, repo_name, branch);
+
     var github = new GitHubApi({
         protocol: "https",
         host: "api.github.com", // should be api.github.com for GitHub
@@ -36,7 +46,7 @@ module.exports = {
     github.repos.getBranch({
         owner: owner,
         repo: repo_name,
-        branch: ref
+        branch: branch
     }, function(err, gh_res) {
         if (err) {
             return res.notFound();
@@ -48,7 +58,7 @@ module.exports = {
         var deleteFolderRecursive = function(path) {
             if( fs.existsSync(path) ) {
                 fs.readdirSync(path).forEach(function(file,index){
-                    var curPath = path + "/" + file;
+                    var curPath = path + "/repos/" + file;
                     if(fs.lstatSync(curPath).isDirectory()) { // recurse
                         deleteFolderRecursive(curPath);
                     } else { // delete file
@@ -63,7 +73,7 @@ module.exports = {
 
         var output_dir = process.cwd() + "/" + timeString;
 
-        ghdownload({user: owner, repo: repo_name, ref: ref}, output_dir)
+        ghdownload({user: owner, repo: repo_name, ref: branch}, output_dir)
         .on('dir', function(dir) {
             console.log(dir);
         })
@@ -83,9 +93,9 @@ module.exports = {
         })
         .on('end', function() {
             // If repo already exists, do not parse
-            db.getRepo(owner, repo_name, ref, function(repo) {
+            db.getRepo(owner, repo_name, branch, function(repo) {
                 if (!repo) {
-                    db.createRepo(owner, repo_name, ref, function(repo) {
+                    db.createRepo(owner, repo_name, branch, function(repo) {
                         console.log("Creating new repo");
                         var processor = new Processor(repo.uuid);
                         processor.process(output_dir, '');

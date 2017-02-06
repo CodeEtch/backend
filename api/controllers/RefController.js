@@ -1,22 +1,24 @@
 /**
+ * Created by harryliu on 2/6/17.
+ */
+/**
  * MethodsController
  *
- * @description :: Server-side logic for managing methods
+ * @description :: Server-side logic for managing reference
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 
 module.exports = {
   /**
-   * MethodsController.getClassReferences()
+   * RefControlller.index()
    */
-  getClassReferences: function (req, res) {
+  index: function (req, res) {
     console.log("Methods: Received get classrefs request");
 
     var method_id = req.param('method_id');
-    
-    db.getClassRefs(method_id, function(refs) {
-        return res.json(refs);
-    });
-  },
-};
 
+    db.getClassRefs(method_id, function(refs) {
+      return res.json(refs);
+    });
+  }
+};

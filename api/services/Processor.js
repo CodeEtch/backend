@@ -123,7 +123,7 @@ Processor.prototype.parse = function(abs_path, local_path, file) {
                 var class_name = listener.getClassName();
                 var parsed_method_refs = listener.getClassReferences();
                 var methodParams = listener.getMethodParams();
-                
+
                 var parsed_method_ref_keys = Object.keys(parsed_method_refs).filter(function(element) {
                     return parsed_method_refs[element].length != 0;
                 });
@@ -148,7 +148,7 @@ Processor.prototype.parse = function(abs_path, local_path, file) {
                 db.createClass(self.repo_id, class_name, local_path, file_tokens[0], function(class_res) {
                     self.classes[class_res.name] = class_res.uuid;
                     var counter = 0;
-                    
+
                     if (Object.keys(methodDeclarations).length == 0) {
                         success();
                     }
@@ -183,13 +183,13 @@ Processor.prototype.buildClassReferences = function() {
     console.log("Processor: Building class references");
 
     var reference_methods = Object.keys(this.classReferences);
-    // Every reference 
+    // Every reference
     for (var method_name of reference_methods) {
         for (var src_class_name of Object.keys(this.classReferences[method_name])) {
             for (var dst_class_name of this.classReferences[method_name][src_class_name]) {
                 if (dst_class_name in this.classes) {
                     db.createClassRef(
-                        this.methods[method_name][src_class_name], 
+                        this.methods[method_name][src_class_name],
                         this.classes[dst_class_name],
                         method_name,
                         dst_class_name);
@@ -208,7 +208,7 @@ Processor.prototype.buildClassReferences = function() {
                 //     if (className in this.classes) {
                 //         console.log(reference);
                 //         db.createClassRef(
-                //             method, 
+                //             method,
                 //             this.classes[this.classReferences[reference]],
                 //             className);
                 //     }
@@ -225,7 +225,7 @@ Processor.prototype.buildClassReferences = function() {
                     if (className in this.classes) {
                         console.log(reference);
                         db.createClassRef(
-                            method, 
+                            method,
                             this.classes[this.classReferences[reference]],
                             className);
                     }

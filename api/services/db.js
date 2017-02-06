@@ -135,8 +135,12 @@ function init() {
     });
 }
 
+function getRepos(callback) {
+  dbRepo.all().then(callback);
+}
+
 function getRepo(owner, repo_name, branch, callback) {
-    dbRepo.findOne({ 
+    dbRepo.findOne({
         where: {
             owner: owner,
             name: repo_name,
@@ -227,6 +231,7 @@ function createMethodParam(method_id, parameter, callback) {
 module.exports = {
     init: init,
     getRepo: getRepo,
+    getRepos: getRepos,
     createRepo: createRepo,
     getClasses: getClasses,
     createClass: createClass,
