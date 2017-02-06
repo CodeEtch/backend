@@ -2,17 +2,11 @@
 var Sequelize = require("sequelize");
 
 // Initialize database connection info
-var dbUsername = process.env.DB_USER,
-    dbPassword = process.env.DB_PASS,
-    dbHost = process.env.DB_HOST,
-    dbPort = process.env.DB_PORT,
-    dbName = process.env.DB_NAME;
-
 function init() {
     console.log("Initializing Database");
-    sequelize = new Sequelize(dbName, dbUsername, dbPassword, {
-        host: dbHost,
+    sequelize = new Sequelize(process.env.DATABASE_URL, {
         dialect: 'postgres',
+        protocol: 'postgres',
         pool: {
             max: 5,
             min: 0,
