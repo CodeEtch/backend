@@ -39,7 +39,9 @@ module.exports.routes = {
   'POST /repositories': 'RepositoryController.create',
   'GET /repositories/:repo_id/classes': 'ClassController.index',
   'GET /classes/:class_id/methods': 'MethodController.index',
-  'GET /methods/:method_id/classrefs': 'RefController.index'
+  'GET /methods/:method_id/classrefs': 'RefController.index',
+  // OAuth
+  'GET /oauth/authorize': 'OAuthController.authorize',
 
   /***************************************************************************
   *                                                                          *

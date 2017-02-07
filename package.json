@@ -35,7 +35,7 @@
   },
   "scripts": {
     "debug": "node debug app.js",
-    "start": "node app.js"
+    "start": "GITHUB_CLIENT_ID=cf990801fbf90489efe1 GITHUB_CLIENT_SECRET=d1caf5aecb5dfb6628861238ac52dba803bc6441 DATABASE_URL=postgres://localhost:5432 node app.js"
   },
   "main": "app.js",
   "repository": {
